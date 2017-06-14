@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>轮播</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .ct {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+        .ct .content{
+            position: absolute;
+            width: 1200px;
+            height: 200px;
+        }
+        .ct .content li {
+            float: left;
+        }
+        .ct .content li img {
+            width: 300px;
+            height: 200px;
+        }
+        .ct .content:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .btn {
+            position: absolute;
+            top: 50%;
+            margin-top: -15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-size: 20px;
+            text-decoration: none;
+            background-color: rgba(27, 27, 27, 0.47);
+            color: white;
+        }
+        .play-pre {
+            left: 10px;
+        }
+        .play-next {
+            right: 10px;
+        }
+        .ct .buttons:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .ct .buttons {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            margin-left: -66px;
+        }
+        .ct .buttons li {
+            float: left;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            width: 25px;
+            height: 7px;
+            border-radius: 5px;
+            margin: 4px;
+        }
+        .ct .buttons .active {
+            background-color: rgba(82, 82, 79, 0.64);
+        }
+    </style>
+</head>
+<div class="ct">
+    <ul class='content'>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/23.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/24.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/25.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/26.jpg" alt=""></a></li>
+    </ul>
+    <a href="" class='btn play-pre'>&lt;</a>
+    <a href="" class='btn play-next'>&gt;</a>
+    <ul class='buttons'>
+        <li class='active'></li>
+        <li ></li>
+        <li ></li>
+        <li></li>
+    </ul>
+</div>
+<div class="ct">
+    <ul class='content'>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/23.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/24.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/25.jpg" alt=""></a></li>
+        <li><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/26.jpg" alt=""></a></li>
+    </ul>
+    <a href="" class='btn play-pre'>&lt;</a>
+    <a href="" class='btn play-next'>&gt;</a>
+    <ul class='buttons'>
+        <li class='active'></li>
+        <li ></li>
+        <li ></li>
+        <li></li>
+    </ul>
+</div>
+<body>
+<script src='jquery-3.2.1.js'></script>
+<script>
+
+
+    Carousel = (function () {
+      function _Carousel(ct){
+        this.ct = ct;
+        this.init();
+        this.bind();
+        this.autoPlay();
+      }
+      _Carousel.prototype = {
+        init:function () {
+          this.content = this.ct.children('.content');
+          this.next = this.ct.find('.play-next');
+          this.pre = this.ct.find('.play-pre');
+          this.btns = this.ct.find('.buttons');
+          var first = this.content.find('li').eq(0).clone();
+          var last = this.content.children().last().clone();
+          this.content.prepend(last);
+          this.content.append(first);
+          this.content.css('width',this.content.children().length*300);
+          this.content.css('left','-300px');
+          this.pageIndex = 0;
+          this.isAnimate = false;
+        },
+        bind:function () {
+          var _this = this;
+          this.next.on('click',function (e) {
+            e.preventDefault();
+            this.playNext();
+          }.bind(this));
+          this.pre.on('click',function (e) {
+            e.preventDefault();
+            this.playPre();
+          }.bind(this));
+          this.btns.on('click','li',function () {
+            _this.pageIndex = $(this).index();
+            _this.play(_this.pageIndex)
+          });
+
+          this.ct.hover(function () {
+            window.clearInterval(_this.interval)
+          },function () {
+            _this.interval = setInterval(function () {
+              _this.playNext()
+            }, 2000)
+          });
+        },
+        playNext:function () {
+          if(this.isAnimate)return
+          this.isAnimate = true;
+          this.pageIndex++;
+          if(this.pageIndex ==5 ){
+            this.content.css('left','-300px');
+            this.play(1)
+            this.pageIndex =1;
+          }else{
+            this.play(this.pageIndex);
+          }
+        },
+        playPre:function () {
+          if(this.isAnimate)return
+          this.isAnimate = true;
+          this.pageIndex--;
+          if(this.pageIndex == -2){
+            this.content.css('left','-1200px');
+            this.play(2);
+            this.pageIndex =2;
+          }else{
+            this.play(this.pageIndex);
+          }
+        },
+        play:function (n) {
+          var _this = this;
+          this.content.animate({'left':-300*(n+1)},function(){
+            _this.isAnimate = false;
+          });
+          this.btns.children('li').eq(0).addClass('active').siblings().removeClass('active');
+          if(n==4)this.btns.children('li').eq(0).addClass('active').siblings().removeClass('active');
+        },
+        autoPlay(){
+          var _this = this;
+          this.interval = setInterval(function () {
+            _this.playNext()
+          },2000)
+        }
+      };
+      return{
+        init:function ($ct) {
+          $ct.each(function (index,node) {
+            new _Carousel($(node));
+          })
+        }
+      }
+    });
+
+    (new Carousel).init($('.ct'));
+
+</script>
+</body>
+</html>
