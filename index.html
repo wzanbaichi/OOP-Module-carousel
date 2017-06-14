@@ -193,7 +193,8 @@
           this.content.animate({'left':-300*(n+1)},function(){
             _this.isAnimate = false;
           });
-          this.btns.children('li').eq(0).addClass('active').siblings().removeClass('active');
+
+          this.btns.children('li').eq(n).addClass('active').siblings().removeClass('active');
           if(n==4)this.btns.children('li').eq(0).addClass('active').siblings().removeClass('active');
         },
         autoPlay(){
